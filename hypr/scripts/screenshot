@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# Screenshot Tool for Hyprland using grim, slurp, swappy, hyprpicker
+
+# Modes:
+# rc: region to clipboard
+# rf: region to file
+# ri: region to swappy (interactive)
+# sc: screen to clipboard
+# sf: screen to file
+# si: screen to swappy
+# p:  pick pixel color
+
+DIR=~/Pictures/Screenshots
+mkdir -p "$DIR"
+
+TIMESTAMP=$(date +%Y-%m-%d_%H-%M-%S)
+FILENAME="$DIR/Screenshot-$TIMESTAMP.png"
+
+case "$1" in
+  rc)
+    grim -g "$(slurp)" - | wl-copy
+    notify-send "Screenshot copied to clipboard"
+    ;;
+  rf)
+    grim -g "$(slurp)" "$FILENAME"
+    notify-send "Screenshot saved" "$FILENAME"
+    ;;
+  ri)
+    grim -g "$(slurp)" - | swappy -f -
+    ;;
+  sc)
+    grim - | wl-copy
+    notify-send "Fullscreen copied to clipboard"
+    ;;
+  sf)
+    grim "$FILENAME"
+    notify-send "Fullscreen saved" "$FILENAME"
+    ;;
+  si)
+    grim - | swappy -f -
+    ;;
+  p)
+    COLOR=$(hyprpicker -a)
+    wl-copy <<< "$COLOR"
+    notify-send "Color picked: $COLOR"
+    ;;
+  *)
+    notify-send "Unknown command" "Use rc, rf, ri, sc, sf, si, p"
+    ;;
+esac
+
